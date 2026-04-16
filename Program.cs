@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Pastel;
 using System.Text;
 
 namespace Program
@@ -18,15 +19,26 @@ namespace Program
             FileInfo,
             Exit
         }
+        
+        public static string FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Passwords.txt");
 
-        static string FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Passwords.txt");
+        public static void EnsureFileExist()
+        {
+            if (!File.Exists(FilePath))
+            {
+                using (File.Create(FilePath)) { }
+                Console.WriteLine("The File \"Password.txt\" Hasn't Been Found, So It Was Created Automatically!".Pastel(ConsoleColor.Green));
+            } 
+        }
 
         public static void Main(string[] args)
         {
+            Console.WriteLine("****** Welcome To The Password Manager ******\n");
             Console.OutputEncoding = Encoding.UTF8;
             ReadPasswords();
             while (true)
             {
+                Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine("Please, Select an option:- ");
                 Console.WriteLine("1. list all the passwords");
                 Console.WriteLine("2. Add / change Passwords");
@@ -34,7 +46,6 @@ namespace Program
                 Console.WriteLine("4. Delete Password");
                 Console.WriteLine("5. File Info");
                 Console.WriteLine("6. Exit the Program");
-
                 if (Enum.TryParse<appOption>(Console.ReadLine(), out appOption SelectedOption))
                 {
                     switch (SelectedOption)
@@ -72,9 +83,7 @@ namespace Program
         {
             foreach (var item in Inventory)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($" {item.Key} = {item.Value} ");
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($" {item.Key} = {item.Value} ".Pastel(ConsoleColor.DarkYellow));
             }
         }
 
@@ -90,16 +99,13 @@ namespace Program
             if (Inventory.ContainsKey(WebsiteName))
             {
                 Inventory[WebsiteName] = Password;
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"{WebsiteName} Password Has Been Changed Successfully!");
+                Console.WriteLine($"{WebsiteName} Password Has Been Changed Successfully!".Pastel(ConsoleColor.DarkGreen));
             }
             else
             {
                 Inventory.Add(WebsiteName, Password);
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("New Password Has Been Added!");
+                Console.WriteLine("New Password Has Been Added!".Pastel(ConsoleColor.Blue));
             }
-            Console.ForegroundColor = ConsoleColor.White;
             SavePasswords();
         }
 
@@ -120,9 +126,7 @@ namespace Program
             if (WebsiteName != null && Inventory.ContainsKey(WebsiteName))
             {
                 Inventory.Remove(WebsiteName);
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"{WebsiteName} Password Has Been Deleted Successfully!");
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($"{WebsiteName} Password Has Been Deleted Successfully!".Pastel(ConsoleColor.DarkRed));
                 SavePasswords();
             }
             else Console.WriteLine("Password Not Found!");
